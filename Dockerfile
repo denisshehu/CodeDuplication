@@ -17,7 +17,12 @@ RUN rm -rf jquery_releases.csv
 # Docker caches results, so if you want to add custom steps to this dockerfile
 # (maybe you want to copy in more files) then consider adding these steps below here.
 # Otherwise you will need to download all versions of jQuery everytime you add new 
-# steps. 
+# steps.
+
+# Add the manually constructed code snippets to the directory /usr/manual-clones.
+WORKDIR /usr/manual-clones
+
+ADD code_snippets .
 
 WORKDIR /usr
 
