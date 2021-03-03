@@ -39,3 +39,9 @@ WORKDIR /usr/jquery-data
 # Open a bash prompt, such that you can execute commands 
 # such as `cloc`. 
 ENTRYPOINT ["bash"]
+
+WORKDIR /usr/src
+
+ADD src .
+
+RUN python main.py
