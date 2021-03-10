@@ -1,38 +1,22 @@
-import json
-import os
+from methods import *
 
-from DataModels import *
+# get the jQuery version numbers present in the 'jquery_releases.csv' file
+version_numbers = get_version_numbers()
 
-sorted_version_numbers = sorted(os.listdir('../jquery-data'))[:-1]
-jQuery_versions = [JQueryVersion(item) for item in sorted_version_numbers]
+# for i in version_numbers:
+#     print(i)
 
-for version in jQuery_versions:
-    os.system('cloc --json --report-file=cloc_result.json ../jquery-data/' + version.version_number + '/src')
+# create a JQueryVersion object for every version number
+jQuery_versions = [JQueryVersion(element) for element in version_numbers]
 
-    with open('cloc_result.json') as json_file:
-        version.add_lines_of_code(json.load(json_file)['JavaScript']['code'])
+# get the lines of code of these jQuery versions
+get_lines_of_code(jQuery_versions)
 
 # for i in jQuery_versions:
 #     print(i.version_number + ': ' + str(i.lines_of_code))
 
-heatmap_cells = []
-
-for i in range(1, len(jQuery_versions)):
-    for j in range(i):
-        heatmap_cells.append(HeatmapCell(jQuery_versions[i], jQuery_versions[j]))
+heatmap_cells = compute_heatmap_data(jQuery_versions)
 
 # for cell in heatmap_cells:
-#     print(cell.rowVersion.version_number + ': ' + cell.columnVersion.version_number)
-
-# For each version of jQuery, compare it with other versions of jQuery for clones
-for version1 in jQuery_versions:
-    for version2 in jQuery_versions:
-        # We do not compare same version to itself
-        if version1 != version2:
-            # -I is used to not match identifiers
-            # --ignore "intro|outro" does not compare intro.js and outro.js files as they produce errors
-            os.system('jsinspect -I -r json --ignore "intro|outro"'
-                      ' ../jquery-data/' + version1.version_number + '/src' +
-                      '../jquery-data/' + version2.version_number + '/src' +
-                      ' > clones_' + version1.version_number + '_vs_' + version2.version_number + '.json')
-            # Note that the output file is: 'clones_'+version1.version_number+'_vs_'+version2.version_number+'.json')
+#     print(cell.get_row_version().get_version_number() + ', ' + cell.get_column_version().get_version_number() + ': ' +
+#           str(cell.get_coverage()))
