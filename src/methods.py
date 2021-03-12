@@ -42,8 +42,8 @@ def get_lines_of_code(j_query_versions):
 
         # files intro.js and outro.js if present in the jQuery version are excluded because when they are parsed
         # by 'jsinspect' an error is reported
-        os.system('cloc --fullpath --not-match-f="intro|outro" --json --report-file=cloc_result.json '
-                  '../jquery-data/' + version.get_version_number() + '/src')
+        os.system('cloc --fullpath --not-match-f="intro|outro" --exclude-dir test --quiet --json ' +
+                  '--report-file=cloc_result.json  ../jquery-data/' + version.get_version_number() + '/src')
 
         with open('cloc_result.json') as json_file:
             java_script_result = json.load(json_file)['JavaScript']
