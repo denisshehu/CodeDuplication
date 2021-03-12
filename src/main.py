@@ -12,8 +12,16 @@ for version in jQuery_versions:
     with open('cloc_result.json') as json_file:
         version.add_lines_of_code(json.load(json_file)['JavaScript']['code'])
 
-# for i in jQuery_versions:
-#     print(i.version_number + ': ' + str(i.lines_of_code))
+# Copy the versions loc info to data.json file for later usage
+versions_dict = {}
+for i in jQuery_versions:
+    versions_dict[i.version_number] = str(i.lines_of_code)
+    #print(i.version_number + ': ' + str(i.lines_of_code))
+jsonString = json.dumps(versions_dict)
+jsonFile = open("data.json", "w")
+jsonFile.write(jsonString)
+jsonFile.close()
+#
 
 heatmap_cells = []
 
