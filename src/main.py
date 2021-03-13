@@ -12,8 +12,16 @@ jQuery_versions = [JQueryVersion(element) for element in version_numbers]
 # get the lines of code of these jQuery versions
 get_lines_of_code(jQuery_versions)
 
-# for i in jQuery_versions:
-#     print(i.version_number + ': ' + str(i.lines_of_code))
+# Copy the versions loc info to data.json file for later usage
+versions_dict = {}
+for i in jQuery_versions:
+    versions_dict[i.version_number] = str(i.lines_of_code)
+    #print(i.version_number + ': ' + str(i.lines_of_code))
+jsonString = json.dumps(versions_dict)
+jsonFile = open("data.json", "w")
+jsonFile.write(jsonString)
+jsonFile.close()
+#
 
 heatmap_cells = compute_heatmap_data(jQuery_versions)
 
