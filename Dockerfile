@@ -12,6 +12,8 @@ COPY jquery_releases.csv .
 
 RUN python prep.py
 
+RUN pip install -U pandas
+
 # Docker caches results, so if you want to add custom steps to this dockerfile
 # (maybe you want to copy in more files) then consider adding these steps below here.
 # Otherwise you will need to download all versions of jQuery everytime you add new 

@@ -2,6 +2,8 @@ import csv
 import os
 import json
 
+import pandas as pd
+
 from data_models import *
 
 
@@ -39,7 +41,6 @@ def get_lines_of_code(j_query_versions):
     """
 
     for version in j_query_versions:
-
         # files intro.js and outro.js if present in the jQuery version are excluded because when they are parsed
         # by 'jsinspect' an error is reported
         os.system('cloc --fullpath --not-match-f="intro|outro" --json --report-file=cloc_result.json '
@@ -149,7 +150,7 @@ def compute_heatmap_data(j_query_versions):
 
     answer = []
 
-    for i in range(1, 4):  # range(1, len(j_query_versions)):
+    for i in range(1, len(j_query_versions)):  # range(1, len(j_query_versions)):
         for j in range(i):
             heatmap_cell = HeatmapCell(j_query_versions[i], j_query_versions[j])
 
@@ -165,6 +166,33 @@ def compute_heatmap_data(j_query_versions):
             heatmap_cell.set_clones_lines_of_code(clones_lines_of_code)
             heatmap_cell.compute_coverage()
 
+            print(heatmap_cell.get_row_version().get_version_number() + ', ' +
+                  heatmap_cell.get_column_version().get_version_number() + ': ' +
+                  str(heatmap_cell.get_coverage()))
+
             answer.append(heatmap_cell)
 
     return answer
+
+
+def transform_into_dataframe(version_numbers, heatmap_cells):
+    data = []
+    index = 0
+
+    for i in range(len(version_numbers)):
+        row = []
+
+        for j in range(len(version_numbers)):
+
+            # if i < 4:
+            if j >= i:
+                row.append(0.0)
+            else:
+                row.append(heatmap_cells[index].get_coverage())
+                index += 1
+            # else:
+            #     row.append(0.0)
+
+        data.append(row)
+
+    return pd.DataFrame(data=data, index=version_numbers, columns=version_numbers)

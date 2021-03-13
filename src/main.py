@@ -20,3 +20,6 @@ heatmap_cells = compute_heatmap_data(jQuery_versions)
 # for cell in heatmap_cells:
 #     print(cell.get_row_version().get_version_number() + ', ' + cell.get_column_version().get_version_number() + ': ' +
 #           str(cell.get_coverage()))
+
+df = transform_into_dataframe(version_numbers, heatmap_cells)
+df.to_csv('heatmap_data.csv')
