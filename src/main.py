@@ -16,7 +16,7 @@ get_lines_of_code(jQuery_versions)
 versions_dict = {}
 for i in jQuery_versions:
     versions_dict[i.version_number] = str(i.lines_of_code)
-    #print(i.version_number + ': ' + str(i.lines_of_code))
+    # print(i.version_number + ': ' + str(i.lines_of_code))
 jsonString = json.dumps(versions_dict)
 jsonFile = open("data.json", "w")
 jsonFile.write(jsonString)

@@ -150,7 +150,7 @@ def compute_heatmap_data(j_query_versions):
 
     answer = []
 
-    for i in range(1, len(j_query_versions)):  # range(1, len(j_query_versions)):
+    for i in range(1, len(j_query_versions)):  # range(1, 10):  # range(1, len(j_query_versions)):
         for j in range(i):
             heatmap_cell = HeatmapCell(j_query_versions[i], j_query_versions[j])
 
@@ -184,7 +184,7 @@ def transform_into_dataframe(version_numbers, heatmap_cells):
 
         for j in range(len(version_numbers)):
 
-            # if i < 4:
+            # if i < 10:
             if j >= i:
                 row.append(0.0)
             else:
