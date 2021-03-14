@@ -3,6 +3,9 @@ import os
 import json
 
 import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
+import numpy as np
 
 from data_models import *
 
@@ -66,7 +69,7 @@ def get_code_clones(heatmap_cell):
     """
 
     # an error is reported when 'jsinspect' parses files intro.js and outro.js, thus they are ignored
-    os.system('jsinspect -I -r json --ignore "intro|outro" ../jquery-data/' +
+    os.system('jsinspect -I -r json --ignore "intro|outro|test" ../jquery-data/' +
               heatmap_cell.get_row_version().get_version_number() + '/src ../jquery-data/' +
               heatmap_cell.get_column_version().get_version_number() + '/src > jsinspect_result.json')
 
@@ -74,6 +77,25 @@ def get_code_clones(heatmap_cell):
         answer = json.load(json_file)
 
     return answer
+
+
+def compute_relative_sizes(j_query_versions):
+    """
+
+    :param j_query_versions:
+    :return:
+    """
+
+    total_lines_of_code = 0
+
+    for version in j_query_versions:
+        total_lines_of_code += version.get_lines_of_code()
+
+    for version in j_query_versions:
+        relative_size = version.get_lines_of_code() / total_lines_of_code
+        version.set_relative_size(relative_size)
+
+    pass
 
 
 def extract_json(code_clones):
@@ -150,7 +172,7 @@ def compute_heatmap_data(j_query_versions):
 
     answer = []
 
-    for i in range(1, len(j_query_versions)):  # range(1, 10):  # range(1, len(j_query_versions)):
+    for i in range(1, 4):  # range(1, len(j_query_versions)):
         for j in range(i):
             heatmap_cell = HeatmapCell(j_query_versions[i], j_query_versions[j])
 
@@ -166,9 +188,9 @@ def compute_heatmap_data(j_query_versions):
             heatmap_cell.set_clones_lines_of_code(clones_lines_of_code)
             heatmap_cell.compute_coverage()
 
-            print(heatmap_cell.get_row_version().get_version_number() + ', ' +
-                  heatmap_cell.get_column_version().get_version_number() + ': ' +
-                  str(heatmap_cell.get_coverage()))
+            # print(heatmap_cell.get_row_version().get_version_number() + ', ' +
+            #       heatmap_cell.get_column_version().get_version_number() + ': ' +
+            #       str(heatmap_cell.get_coverage()))
 
             answer.append(heatmap_cell)
 
@@ -184,15 +206,49 @@ def transform_into_dataframe(version_numbers, heatmap_cells):
 
         for j in range(len(version_numbers)):
 
-            # if i < 10:
-            if j >= i:
-                row.append(0.0)
+            if i < 4:
+                if j >= i:
+                    row.append(0.0)
+                else:
+                    row.append(heatmap_cells[index].get_coverage())
+                    index += 1
             else:
-                row.append(heatmap_cells[index].get_coverage())
-                index += 1
-            # else:
-            #     row.append(0.0)
+                row.append(0.0)
 
         data.append(row)
 
     return pd.DataFrame(data=data, index=version_numbers, columns=version_numbers)
+
+
+def plot_heatmap(dataframe):
+    # standard
+    fig, ax = plt.subplots(figsize=(15, 15))
+
+    # color scheme
+    colors = ['white', 'deepskyblue', 'forestgreen', 'yellow', 'red']
+    cmap = LinearSegmentedColormap.from_list('cmap', colors)
+
+    im = ax.imshow(dataframe, cmap, vmin=0.0, vmax=1.0)  # vmin, vmax for range
+
+    cbar = ax.figure.colorbar(im, ax=ax)  # color bar
+
+    # set ticks of length 0 (not showing)
+    ax.set_xticks(np.arange(len(dataframe.columns)))
+    ax.set_yticks(np.arange(len(dataframe.columns)))
+    ax.tick_params(length=0)
+
+    # label ticks
+    ax.set_xticklabels(dataframe.columns)
+    ax.set_yticklabels(dataframe.columns)
+
+    # rotate column labels
+    plt.setp(ax.get_xticklabels(), rotation=90)
+
+    ax.set_xticks(np.arange(-0.5, len(dataframe.columns), 1), minor=True)
+    ax.set_yticks(np.arange(-0.5, len(dataframe.columns), 1), minor=True)
+    ax.grid(which='minor', color='black', linewidth=2)
+
+    # standard
+    fig.tight_layout()
+    plt.savefig('heatmap.png')
+    pass

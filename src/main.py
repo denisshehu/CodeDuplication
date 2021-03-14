@@ -12,16 +12,11 @@ jQuery_versions = [JQueryVersion(element) for element in version_numbers]
 # get the lines of code of these jQuery versions
 get_lines_of_code(jQuery_versions)
 
-# Copy the versions loc info to data.json file for later usage
-versions_dict = {}
-for i in jQuery_versions:
-    versions_dict[i.version_number] = str(i.lines_of_code)
-    # print(i.version_number + ': ' + str(i.lines_of_code))
-jsonString = json.dumps(versions_dict)
-jsonFile = open("data.json", "w")
-jsonFile.write(jsonString)
-jsonFile.close()
-#
+# compute the relative size of each jQuery version
+compute_relative_sizes(jQuery_versions)
+
+# for version in jQuery_versions:
+#     print(version.get_version_number() + ': ' + str(version.get_relative_size()))
 
 heatmap_cells = compute_heatmap_data(jQuery_versions)
 
@@ -29,5 +24,6 @@ heatmap_cells = compute_heatmap_data(jQuery_versions)
 #     print(cell.get_row_version().get_version_number() + ', ' + cell.get_column_version().get_version_number() + ': ' +
 #           str(cell.get_coverage()))
 
-df = transform_into_dataframe(version_numbers, heatmap_cells)
-df.to_csv('heatmap_data.csv')
+dataframe = transform_into_dataframe(version_numbers, heatmap_cells)
+plot_heatmap(dataframe)
+# df.to_csv('heatmap_data.csv')

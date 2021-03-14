@@ -38,6 +38,7 @@ class JQueryVersion:
     def __init__(self, version_number):
         self.version_number = version_number
         self.lines_of_code = 0
+        self.relative_size = 0
 
     def get_version_number(self):
         return self.version_number
@@ -47,6 +48,12 @@ class JQueryVersion:
 
     def set_lines_of_code(self, lines_of_code):
         self.lines_of_code = lines_of_code
+
+    def get_relative_size(self):
+        return self.relative_size
+
+    def set_relative_size(self, relative_size):
+        self.relative_size = relative_size
 
 
 class JsInspectInstance:
