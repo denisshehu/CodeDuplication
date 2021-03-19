@@ -12,12 +12,13 @@ COPY jquery_releases.csv .
 
 RUN python prep.py
 
-RUN pip install -U pandas matplotlib
-
 # Docker caches results, so if you want to add custom steps to this dockerfile
 # (maybe you want to copy in more files) then consider adding these steps below here.
 # Otherwise you will need to download all versions of jQuery everytime you add new 
 # steps.
+
+# Install the packages required to generate the heatmap
+RUN pip install -U pandas matplotlib
 
 # Add the manually constructed code snippets to the directory /usr/manual-clones.
 WORKDIR /usr/manual-clones
@@ -40,8 +41,10 @@ WORKDIR /usr/jquery-data
 # such as `cloc`. 
 ENTRYPOINT ["bash"]
 
+# Add the source code to Docker
 WORKDIR /usr/src
 
 ADD src .
 
+# Run the tool
 RUN python main.py
